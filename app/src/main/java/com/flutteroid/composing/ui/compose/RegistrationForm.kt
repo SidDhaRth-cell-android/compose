@@ -1,6 +1,7 @@
 package com.flutteroid.composing.ui.compose
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -40,7 +41,9 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun RegistrationForm(context: Context) {
+fun RegistrationForm(context: Context, sharedPreferences: SharedPreferences) {
+
+
   val firstName = remember {
     mutableStateOf("")
   }
@@ -144,7 +147,7 @@ fun RegistrationForm(context: Context) {
           val lastName = lastName.value
           val email = email.value
           val password = password.value
-          onSubmitClicked(firstName, lastName, email, password, context)
+          onSubmitClicked(firstName, lastName, email, password, context, sharedPreferences)
         },
         modifier = Modifier
           .fillMaxWidth()
@@ -154,6 +157,12 @@ fun RegistrationForm(context: Context) {
       ) {
         Text(text = "SIGN UP", fontSize = 18.sp)
       }
+      Spacer(modifier = Modifier.height(10.dp))
+      Text(text = "Already have an account?", modifier = Modifier
+        .clickable {
+
+        }
+        .align(Alignment.CenterHorizontally))
     }
   }
 }
@@ -163,7 +172,8 @@ fun onSubmitClicked(
   lastName: String,
   email: String,
   password: String,
-  context: Context
+  context: Context,
+  sharedPreferences: SharedPreferences
 ) {
   if (firstName.isEmpty() || firstName.length < 3) {
     Toast.makeText(context, "First name is not valid", Toast.LENGTH_SHORT).show()
@@ -174,6 +184,12 @@ fun onSubmitClicked(
   } else if (password.isEmpty() || password.length < 8) {
     Toast.makeText(context, "Password is not valid", Toast.LENGTH_SHORT).show()
   } else {
+    val editor = sharedPreferences.edit()
+    editor.putString("first_name", firstName)
+    editor.putString("last_name", lastName)
+    editor.putString("email", email)
+    editor.putString("password", password)
+    editor.apply()
     Toast.makeText(context, "Everything seems to be fine", Toast.LENGTH_SHORT).show()
   }
 }

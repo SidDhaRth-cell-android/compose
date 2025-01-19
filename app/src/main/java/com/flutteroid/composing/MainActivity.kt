@@ -1,5 +1,6 @@
 package com.flutteroid.composing
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -44,15 +45,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.flutteroid.composing.ui.compose.LoginForm
 import com.flutteroid.composing.ui.compose.RegistrationForm
 
 
 class MainActivity : ComponentActivity() {
+
+
+  private lateinit var sharedPreferences: SharedPreferences
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
+
+    sharedPreferences = this.getSharedPreferences("food_pref", MODE_PRIVATE)
     setContent {
-      RegistrationForm(this)
+      LoginForm()
+      //RegistrationForm(this, sharedPreferences)
     }
   }
 
@@ -97,61 +105,6 @@ fun ShowMyImage() {
 
 }
 
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun LoginForm() {
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .background(color = Color(0xFF042F68))
-      .padding(horizontal = 20.dp),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
-  ) {
-    Column(
-      modifier = Modifier.weight(1f),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-      Text(
-        text = "facebook", style = TextStyle(
-          color = Color.White,
-          fontSize = 28.sp,
-          fontWeight = FontWeight.ExtraBold
-        )
-      )
-      Spacer(modifier = Modifier.height(30.dp))
-      TextField(value = "", onValueChange = {
-
-      }, placeholder = {
-        Text(text = "email or phone")
-      }, modifier = Modifier.fillMaxWidth())
-      Spacer(modifier = Modifier.height(10.dp))
-      TextField(value = "", onValueChange = {
-
-      }, placeholder = {
-        Text(text = "password")
-      }, modifier = Modifier.fillMaxWidth())
-      Spacer(modifier = Modifier.height(20.dp))
-      Button(
-        onClick = {},
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(5.dp),
-        colors = ButtonDefaults.buttonColors().copy(containerColor = Color(0xFF031936))
-      ) {
-        Text(text = "Log In")
-      }
-    }
-    Text(
-      text = "sign up for facebook",
-      style = TextStyle(color = Color.White),
-      fontSize = 16.sp,
-      modifier = Modifier.padding(bottom = 30.dp)
-    )
-  }
-
-}
 
 
 @Composable
