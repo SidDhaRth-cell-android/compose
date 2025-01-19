@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.flutteroid.composing.ui.compose.RegistrationForm
 
 
 class MainActivity : ComponentActivity() {
@@ -51,9 +52,7 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
     setContent {
-
-      //LoginForm()
-      //ShowMyImageFromNetwork()
+      RegistrationForm(this)
     }
   }
 
@@ -62,7 +61,6 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-@Preview(showBackground = true, showSystemUi = true)
 fun ShowMyStack() {
   Text(text = "Hello WOrld")
   Text(text = "Hello WOrld sjkd")
@@ -101,6 +99,7 @@ fun ShowMyImage() {
 
 
 @Composable
+@Preview(showBackground = true, showSystemUi = true)
 fun LoginForm() {
   Column(
     modifier = Modifier
