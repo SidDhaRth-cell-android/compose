@@ -1,5 +1,9 @@
 package com.flutteroid.composing.ui.compose
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,11 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
@@ -33,21 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.flutteroid.composing.ui.navigation.Screen
 
 
 @Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun LoginForm() {
+fun LoginForm(navController: NavHostController, sharedPreferences: SharedPreferences, context: Context) {
 
-  val firstName = remember {
-    mutableStateOf("")
-  }
-  val lastName = remember {
-    mutableStateOf("")
-  }
   val email = remember {
     mutableStateOf("")
   }
@@ -58,17 +54,6 @@ fun LoginForm() {
     mutableStateOf(false)
   }
   Scaffold(
-    topBar = {
-      Icon(
-        imageVector = Icons.Default.ArrowBack,
-        contentDescription = "back",
-        modifier = Modifier
-          .clickable {
-          }
-          .padding(start = 10.dp, top = 5.dp)
-          .size(30.dp), tint = Color(0xFFb83d43)
-      )
-    }
   ) { innerPadding ->
     Column(
       modifier = Modifier
@@ -127,7 +112,17 @@ fun LoginForm() {
       Spacer(modifier = Modifier.height(20.dp))
       Button(
         onClick = {
+          onSignInClicked(email.value, password.value, sharedPreferences) { message, status ->
+            if (status) {
+              val editor = sharedPreferences.edit()
+              editor.putBoolean("isLoggedIn", true)
+              editor.apply()
+              navController.navigate(Screen.Dashboard.name)
+            } else {
+              Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
 
+          }
         },
         modifier = Modifier
           .fillMaxWidth()
@@ -143,9 +138,32 @@ fun LoginForm() {
         modifier = Modifier
           .align(Alignment.CenterHorizontally)
           .clickable {
-
+            navController.navigate(Screen.Registration.name)
           }
       )
     }
   }
+}
+
+fun onSignInClicked(
+  email: String,
+  password: String,
+  sharedPreferences: SharedPreferences,
+  onLoginCallback: (String, Boolean) -> Unit
+) {
+  val storedEmail = sharedPreferences.getString("email", null)
+  val storedPassword = sharedPreferences.getString("password", null)
+
+  if (email != storedEmail) {
+    onLoginCallback("Email is not valid", false)
+  } else if (password != storedPassword) {
+    onLoginCallback("Password is not valid", false)
+  } else {
+    onLoginCallback("Login Successful", true)
+  }
+
+
+  Log.e("TAG", "onSignInClicked: $storedEmail")
+  Log.e("TAG", "onSignInClicked: $storedPassword")
+
 }

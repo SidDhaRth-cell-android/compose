@@ -64,6 +64,12 @@ dependencies {
   debugImplementation(libs.androidx.ui.tooling)
   debugImplementation(libs.androidx.ui.test.manifest)
 
-  implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-  implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+  implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
+
+
+  implementation(libs.androidx.navigation.compose)
+
+
+  implementation(libs.androidx.material)
 }

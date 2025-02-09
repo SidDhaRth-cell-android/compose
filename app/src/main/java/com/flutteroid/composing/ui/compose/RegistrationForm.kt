@@ -38,10 +38,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 
 @Composable
-fun RegistrationForm(context: Context, sharedPreferences: SharedPreferences) {
+fun RegistrationForm(
+  context: Context? = null,
+  sharedPreferences: SharedPreferences? = null,
+  navController: NavHostController
+) {
 
 
   val firstName = remember {
@@ -147,7 +152,21 @@ fun RegistrationForm(context: Context, sharedPreferences: SharedPreferences) {
           val lastName = lastName.value
           val email = email.value
           val password = password.value
-          onSubmitClicked(firstName, lastName, email, password, context, sharedPreferences)
+          onSubmitClicked(
+            firstName,
+            lastName,
+            email,
+            password,
+            context,
+            sharedPreferences
+          ) { message, success ->
+            if (success) {
+              navController.popBackStack()
+            } else {
+              Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+
+          }
         },
         modifier = Modifier
           .fillMaxWidth()
@@ -160,7 +179,7 @@ fun RegistrationForm(context: Context, sharedPreferences: SharedPreferences) {
       Spacer(modifier = Modifier.height(10.dp))
       Text(text = "Already have an account?", modifier = Modifier
         .clickable {
-
+          navController.popBackStack()
         }
         .align(Alignment.CenterHorizontally))
     }
@@ -172,24 +191,26 @@ fun onSubmitClicked(
   lastName: String,
   email: String,
   password: String,
-  context: Context,
-  sharedPreferences: SharedPreferences
+  context: Context?,
+  sharedPreferences: SharedPreferences?,
+  onSubmitCompletedCallback: (String, Boolean) -> Unit
 ) {
   if (firstName.isEmpty() || firstName.length < 3) {
-    Toast.makeText(context, "First name is not valid", Toast.LENGTH_SHORT).show()
+    onSubmitCompletedCallback("First name is not valid", false)
   } else if (lastName.isEmpty() || lastName.length < 3) {
-    Toast.makeText(context, "Last name is not valid", Toast.LENGTH_SHORT).show()
+    onSubmitCompletedCallback("Last name is not valid", false)
   } else if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-    Toast.makeText(context, "Email is not valid", Toast.LENGTH_SHORT).show()
+    onSubmitCompletedCallback("Email is not valid", false)
   } else if (password.isEmpty() || password.length < 8) {
-    Toast.makeText(context, "Password is not valid", Toast.LENGTH_SHORT).show()
+    onSubmitCompletedCallback("Password is not valid", false)
   } else {
-    val editor = sharedPreferences.edit()
-    editor.putString("first_name", firstName)
-    editor.putString("last_name", lastName)
-    editor.putString("email", email)
-    editor.putString("password", password)
-    editor.apply()
-    Toast.makeText(context, "Everything seems to be fine", Toast.LENGTH_SHORT).show()
+    val editor = sharedPreferences?.edit()
+    editor?.putString("first_name", firstName)
+    editor?.putString("last_name", lastName)
+    editor?.putString("email", email)
+    editor?.putString("password", password)
+    editor?.apply()
+    onSubmitCompletedCallback("User Registered Successfully", true)
+
   }
 }
